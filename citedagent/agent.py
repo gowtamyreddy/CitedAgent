@@ -37,16 +37,6 @@ class CitedAgent:
             spans = step("verify", sub,
                          lambda r=result: verifier.verify(
                              r["spans"]))
-            if not spans:
-                t0 = time.perf_counter()
-                rescued = verifier.rescue(result.get("ranked") or [])
-                if rescued:
-                    trace.append({"kind": "rescue", "detail": sub,
-                                  "latency_ms": round(
-                                      (time.perf_counter() - t0) * 1000,
-                                      1),
-                                  "status": "ok"})
-                    spans = [rescued]
             sub_results.append((sub, spans))
         out = step("compose", question,
                    lambda: composer.compose(question, sub_results))

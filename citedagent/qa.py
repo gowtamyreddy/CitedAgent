@@ -43,25 +43,4 @@ class EvidenceRAGQA:
         result = answer_module.extractive_answer(
             question, ranked, retriever.embedder)
         spans = result.get("spans") or []
-        # Ranked passages are cross-encoder ordered only when
-        # reranking is on. Fused RRF scores are all positive, so
-        # they must never feed the rescue rule in verifier.py.
-        ranked_out = _normalize_ranked(ranked) \
-            if self.use_rerank else []
-        return {"status": result.get("status"), "spans": spans,
-                "ranked": ranked_out}
-
-
-def _normalize_ranked(ranked):
-    """Ranker output (chunk, score) tuples to plain dicts."""
-    out = []
-    for item in ranked:
-        if isinstance(item, tuple):
-            chunk, score = item
-        else:
-            chunk, score = item, item.get("score", 0)
-        out.append({"doc_id": chunk["doc_id"], "page": chunk["page"],
-                    "char_start": chunk["char_start"],
-                    "char_end": chunk["char_end"], "text": chunk["text"],
-                    "rerank_score": float(score)})
-    return out
+        return {"status": result.get("status"), "spans": spans}

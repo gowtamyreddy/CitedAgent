@@ -2,19 +2,11 @@
 
 
 def _sort_key(span):
-    """Answerer score, or the reranker score for rescued spans."""
-    cit = span["citation"]
-    score = cit.get("score")
-    return score if score is not None else cit.get("rerank_score", 0)
+    """Answerer score, highest first."""
+    return span["citation"]["score"]
 
 
 def _source_line(cit):
-    if cit.get("rescued"):
-        return ("<small>Source: arXiv %s, page %s, chars %s-%s, "
-                "retriever-selected passage, cross-encoder score "
-                "%.2f</small>"
-                % (cit["doc_id"], cit["page"], cit["char_start"],
-                   cit["char_end"], cit["rerank_score"]))
     return ("<small>Source: arXiv %s, page %s, chars %s-%s, "
             " score %.3f</small>"
             % (cit["doc_id"], cit["page"], cit["char_start"],
@@ -56,14 +48,8 @@ def compose(question, sub_results):
     lines.append("")
     for span in verified[:8]:
         cit = span["citation"]
-        if cit.get("rescued"):
-            lines.append("- arXiv %s, page %s, retriever-selected "
-                         "(cross-encoder %.2f)"
-                         % (cit["doc_id"], cit["page"],
-                            cit["rerank_score"]))
-        else:
-            lines.append("- arXiv %s, page %s, score %.3f"
-                         % (cit["doc_id"], cit["page"], cit["score"]))
+        lines.append("- arXiv %s, page %s, score %.3f"
+                     % (cit["doc_id"], cit["page"], cit["score"]))
     if unsupported:
         lines.append("")
         lines.append("## Could not verify")

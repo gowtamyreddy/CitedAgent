@@ -81,57 +81,5 @@ class AgentTests(unittest.TestCase):
                                    )["passed"])
 
 
-def _ranked(doc_scores):
-    return [{"doc_id": d, "page": 1, "char_start": 0, "char_end": 10,
-             "text": "passage", "rerank_score": s}
-            for d, s in doc_scores]
-
-
-class RescueTests(unittest.TestCase):
-    def test_rescue_positive_retro_like(self):
-        ranked = _ranked([("2112.04426", 2.44), ("2112.04426", 1.79),
-                          ("2112.04426", 0.67), ("2112.04426", 0.52),
-                          ("2112.04426", 0.30)])
-        span = verifier.rescue(ranked)
-        self.assertIsNotNone(span)
-        self.assertEqual(span["citation"]["doc_id"], "2112.04426")
-        self.assertTrue(span["citation"]["rescued"])
-
-    def test_rescue_rejects_negative_top_despite_share(self):
-        # bread: 3/5 from one doc, but top score -10.69
-        ranked = _ranked([("2505.19134", -10.69), ("2112.04426", -11.04),
-                          ("2112.04426", -11.06),
-                          ("cancer-ensemble-segmentation", -11.06),
-                          ("2112.04426", -11.07)])
-        self.assertIsNone(verifier.rescue(ranked))
-
-    def test_rescue_rejects_scattered_positive(self):
-        ranked = _ranked([("2112.04426", 0.5), ("2112.04426", 0.4),
-                          ("gsad-sdee-2022", 0.3), ("2505.19134", 0.2),
-                          ("2505.19134", 0.1)])
-        self.assertIsNone(verifier.rescue(ranked))
-
-
-class FakeRescueQA:
-    def retrieve(self, question):
-        return {"status": "insufficient_evidence", "spans": [],
-                "ranked": _ranked([("2112.04426", 2.44),
-                                   ("2112.04426", 1.79),
-                                   ("2112.04426", 0.67),
-                                   ("2112.04426", 0.52),
-                                   ("2112.04426", 0.30)])}
-
-
-class AgentRescueTests(unittest.TestCase):
-    def test_agent_answers_via_rescue(self):
-        agent = CitedAgent(FakeRescueQA())
-        out = agent.run("What is RETRO?")
-        self.assertEqual(out["status"], "answered")
-        self.assertIn("2112.04426", out["report"])
-        self.assertIn("retriever-selected", out["report"])
-        self.assertTrue(any(t["kind"] == "rescue"
-                            for t in out["trace"]))
-
-
 if __name__ == "__main__":
     unittest.main()

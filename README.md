@@ -22,12 +22,18 @@ supporting evidence get a refusal, not an answer.
 V1: planner, retriever, verifier, composer, trace, eval gate,
 dashboard, tests.
 
-## Rescue rule (added after the RETRO miss)
+## The RETRO miss, and the real fix (2026-10-24)
 
-When the answer scorer refuses (best sentence score below 0.5) but the
-reranker is confident and consistent, the agent quotes the top
-reranked passage, labelled "retriever-selected" in the report. Both
-gates are required: top cross-encoder score above zero AND at least 3
-of the top 5 passages from one document. The bread refusal scores 3/5
-on share but a -10.69 top score, so share alone never rescues. Golden
-eval after the fix: 9/9, refusal rate 1.0.
+The agent once refused "What is RETRO?" even though the paper was in
+the corpus. The first fix was a rescue rule (quote the top reranked
+passage when the reranker was confident and consistent). That was a
+band-aid and it was removed the same day.
+
+The real cause was upstream: the RETRO paper sets its name in small
+caps, and the PDF extractor mangled it into "R/e.sc/t.sc/r.sc/o.sc"
+in 149 chunks, so the paper's own name was unsearchable in its own
+text. The fix went into EvidenceRAG's text cleaner (small-caps repair
+before chunking, so citations stay exact) plus a curated rebuild of
+exactly the 20-paper index. After that, RETRO answers through the
+normal path with scored citations, and the golden eval is 9/9 with
+refusal rate 1.0 and no rescue rule in the code.

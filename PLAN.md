@@ -48,3 +48,13 @@ reranked score 2.44, 5/5 passages RETRO), but the answer scorer's
 sentence similarity peaked at 0.29, below the 0.5 bar. Fix: the
 two-gate rescue rule above, verified by the full golden eval (9/9)
 with both refusal cases still refusing.
+
+## Update: rescue rule removed (2026-10-24)
+
+The rescue rule above was a band-aid and has been deleted from the
+code, the tests, and the report format. Root cause found the same day:
+small-caps PDF extraction mangled RETRO's name in 149 chunks (see
+EvidenceRAG src/ingest.py clean_text). After the corpus fix and a
+curated rebuild, RETRO answers through the normal verify path. Do not
+re-add a rescue-style fallback without a new, separately diagnosed
+failure.
