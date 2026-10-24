@@ -1,0 +1,9 @@
+{"id": "raptor", "question": "How does RAPTOR organize retrieved text?", "expected_doc": "2401.18059", "expected_phrase": "clusters chunks of text"}
+{"id": "dpr", "question": "How many Wikipedia passages does Dense Passage Retrieval index?", "expected_doc": "2004.04906", "expected_phrase": "21,015,324 passages"}
+{"id": "selfrag", "question": "What is Self-RAG?", "expected_doc": "2310.11511", "expected_phrase": "Self-RAG"}
+{"id": "fid", "question": "What is Fusion-in-Decoder?", "expected_doc": "2007.01282", "expected_phrase": "Fusion-in-Decoder"}
+{"id": "realm", "question": "What is REALM?", "expected_doc": "2002.08909", "expected_phrase": "REALM"}
+{"id": "crag", "question": "What is CRAG?", "expected_doc": "2401.15884", "expected_phrase": "CRAG"}
+{"id": "retro", "question": "What is RETRO?", "expected_doc": "2112.04426", "expected_phrase": "RETRO"}
+{"id": "refusal_bread", "question": "What is the best way to bake bread?", "should_refuse": true}
+{"id": "refusal_faucet", "question": "How do I fix a leaking faucet?", "should_refuse": true}
